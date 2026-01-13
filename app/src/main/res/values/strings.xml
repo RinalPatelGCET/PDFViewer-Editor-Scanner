@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Smart PDF Suite</string>
+    <string name="title_home">Home</string>
+    <string name="title_maker">Make PDF</string>
+    <string name="title_editor">Edit PDF</string>
+    <string name="title_scanner">Scan PDF</string>
+    <string name="title_files">Files</string>
+    <string name="permission_denied_message">Permission denied. Some features may not work.</string>
+</resources>

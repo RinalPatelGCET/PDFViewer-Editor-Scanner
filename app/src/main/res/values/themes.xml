@@ -1,0 +1,58 @@
+<!--<resources xmlns:tools="http://schemas.android.com/tools">-->
+<!--    &lt;!&ndash; Base application theme. &ndash;&gt;-->
+<!--    <style name="Base.Theme.PDFViewerEditorScanner" parent="Theme.Material3.DayNight.NoActionBar">-->
+<!--        &lt;!&ndash; Customize your light theme here. &ndash;&gt;-->
+<!--        &lt;!&ndash; <item name="colorPrimary">@color/my_light_primary</item> &ndash;&gt;-->
+<!--    </style>-->
+
+<!--    <style name="Theme.PDFViewerEditorScanner" parent="Base.Theme.PDFViewerEditorScanner" />-->
+<!--</resources>-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. Light mode. -->
+    <style name="Theme.SmartPdfSuite.Light" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/primaryLight</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkLight</item>
+        <item name="colorOnPrimary">@color/onPrimaryLight</item>
+        <item name="colorSecondary">@color/secondaryLight</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkLight</item>
+        <item name="colorOnSecondary">@color/onSecondaryLight</item>
+        <item name="android:colorBackground">@color/backgroundLight</item>
+        <item name="colorSurface">@color/surfaceLight</item>
+        <item name="colorOnSurface">@color/onSurfaceLight</item>
+        <item name="colorError">@color/errorLight</item>
+        <item name="colorOnError">@color/onErrorLight</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <!-- Text Colors -->
+        <item name="android:textColorPrimary">@color/onSurfaceLight</item>
+        <item name="android:textColorSecondary">@color/onSurfaceVariantLight</item>
+    </style>
+
+    <!-- Base application theme. Dark mode. -->
+    <style name="Theme.SmartPdfSuite.Dark" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/primaryDark</item>
+        <item name="colorPrimaryVariant">@color/primaryLightDark</item>
+        <item name="colorOnPrimary">@color/onPrimaryDark</item>
+        <item name="colorSecondary">@color/secondaryDark</item>
+        <item name="colorSecondaryVariant">@color/secondaryLightDark</item>
+        <item name="colorOnSecondary">@color/onSecondaryDark</item>
+        <item name="android:colorBackground">@color/backgroundDark</item>
+        <item name="colorSurface">@color/surfaceDark</item>
+        <item name="colorOnSurface">@color/onSurfaceDark</item>
+        <item name="colorError">@color/errorDark</item>
+        <item name="colorOnError">@color/onErrorDark</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <!-- Text Colors -->
+        <item name="android:textColorPrimary">@color/onSurfaceDark</item>
+        <item name="android:textColorSecondary">@color/onSurfaceVariantDark</item>
+    </style>
+
+    <!-- Theme for DayNight, allowing system to decide -->
+    <style name="Theme.SmartPdfSuite" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Default to light mode properties, overridden by night mode qualifiers -->
+    </style>
+</resources>

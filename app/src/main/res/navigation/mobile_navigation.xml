@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.smartpdfsuite.fragments.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+     <fragment
+         android:id="@+id/navigation_maker"
+         android:name="com.smartpdfsuite.fragments.MakerFragment"
+         android:label="@string/title_maker"
+         tools:layout="@layout/fragment_maker" />
+
+     <fragment
+         android:id="@+id/navigation_editor"
+         android:name="com.smartpdfsuite.fragments.EditorFragment"
+         android:label="@string/title_editor"
+         tools:layout="@layout/fragment_editor" />
+
+<!--     <fragment-->
+<!--         android:id="@+id/navigation_scanner"-->
+<!--         android:name="com.smartpdfsuite.fragments.ScannerFragment"-->
+<!--         android:label="@string/title_scanner"-->
+<!--         tools:layout="@layout/fragment_scanner" />-->
+
+
+    <fragment
+        android:id="@+id/navigation_scanner"
+        android:name="com.smartpdfsuite.fragments.ScannerFragment"
+        android:label="@string/title_scanner"
+        tools:layout="@layout/fragment_scanner">
+        <!-- Make sure this ID exactly matches what you're using in Java -->
+        <action
+            android:id="@+id/action_scannerFragment_to_imageProcessorFragment"
+            app:destination="@id/imageProcessorFragment" />
+    </fragment>
+
+     <fragment
+         android:id="@+id/navigation_files"
+         android:name="com.smartpdfsuite.fragments.OrganizerFragment"
+         android:label="@string/title_files"
+         tools:layout="@layout/fragment_organizer" />
+
+    <!-- You'll also need a ReaderFragment for viewing a specific PDF -->
+    <fragment
+        android:id="@+id/navigation_reader"
+        android:name="com.smartpdfsuite.fragments.ReaderFragment"
+        android:label="PDF Reader"
+        tools:layout="@layout/fragment_reader">
+        <argument
+            android:name="pdfUri"
+            app:argType="android.net.Uri" />
+    </fragment>
+
+    <!-- NEW: Image Processor Fragment -->
+    <fragment
+        android:id="@+id/imageProcessorFragment"
+        android:name="com.smartpdfsuite.fragments.ImageProcessorFragment"
+        android:label="Process Image"
+        tools:layout="@layout/fragment_image_processor">
+        <argument
+            android:name="imageUri"
+            app:argType="android.net.Uri" />
+    </fragment>
+
+</navigation>

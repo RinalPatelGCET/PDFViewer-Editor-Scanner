@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light Theme Colors -->
+    <color name="primaryLight">#6200EE</color>
+    <color name="primaryDarkLight">#3700B3</color>
+    <color name="onPrimaryLight">#FFFFFF</color>
+    <color name="secondaryLight">#03DAC6</color>
+    <color name="secondaryDarkLight">#018786</color>
+    <color name="onSecondaryLight">#000000</color>
+    <color name="backgroundLight">#F5F5F5</color>
+    <color name="surfaceLight">#FFFFFF</color>
+    <color name="onSurfaceLight">#212121</color>
+    <color name="onSurfaceVariantLight">#757575</color>
+    <color name="errorLight">#B00020</color>
+    <color name="onErrorLight">#FFFFFF</color>
+
+    <!-- Dark Theme Colors -->
+    <color name="primaryDark">#BB86FC</color>
+    <color name="primaryLightDark">#3700B3</color>
+    <color name="onPrimaryDark">#000000</color>
+    <color name="secondaryDark">#03DAC6</color>
+    <color name="secondaryLightDark">#03DAC6</color>
+    <color name="onSecondaryDark">#000000</color>
+    <color name="backgroundDark">#121212</color>
+    <color name="surfaceDark">#1E1E1E</color>
+    <color name="onSurfaceDark">#FFFFFF</color>
+    <color name="onSurfaceVariantDark">#BDBDBD</color>
+    <color name="errorDark">#CF6679</color>
+    <color name="onErrorDark">#000000</color>
+
+    <!-- Generic colors that might be used across themes -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
