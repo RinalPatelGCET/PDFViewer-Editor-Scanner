@@ -21,8 +21,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
-//import com.smartpdfsuite.R;
-import com.example.pdfviewer_editor_scanner.R;
+import com.smartpdfsuite.R;
+
 import com.smartpdfsuite.viewmodels.HomeViewModel;
 import com.smartpdfsuite.viewmodels.OrganizerViewModel;
 import com.smartpdfsuite.viewmodels.ScannerViewModel;

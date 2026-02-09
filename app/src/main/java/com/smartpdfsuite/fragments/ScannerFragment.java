@@ -29,8 +29,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.common.util.concurrent.ListenableFuture;
-/*import com.smartpdfsuite.R;*/
-import com.example.pdfviewer_editor_scanner.R;
+import com.smartpdfsuite.R;
+
 import com.smartpdfsuite.viewmodels.ScannerViewModel;
 
 import java.io.File;

@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.pdfviewer_editor_scanner.R;
+import com.smartpdfsuite.R;
 import com.smartpdfsuite.viewmodels.MakerViewModel; // You would create this ViewModel
 
 public class MakerFragment extends Fragment {

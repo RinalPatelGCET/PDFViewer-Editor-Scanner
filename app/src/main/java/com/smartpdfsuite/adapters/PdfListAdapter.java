@@ -8,8 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.smartpdfsuite.R;
-import com.example.pdfviewer_editor_scanner.R;
+import com.smartpdfsuite.R;
+
 import com.smartpdfsuite.models.PdfDocument;
 
 import java.text.SimpleDateFormat;
