@@ -1,7 +1,120 @@
+package com.smartpdfsuite.fragments;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.*;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnErrorListener;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
+import com.smartpdfsuite.R;
+
+public class ReaderFragment extends Fragment
+        implements OnPageChangeListener, OnLoadCompleteListener, OnErrorListener {
+
+    public static final String ARG_PDF_URI = "pdf_uri";
+    public static final String ARG_PDF_NAME = "pdf_name";
+
+    private PDFView pdfView;
+    private Uri pdfUri;
+    private String pdfName;
+    private int pageNumber = 0;
+
+    public static ReaderFragment newInstance(Uri pdfUri, String pdfName) {
+        ReaderFragment fragment = new ReaderFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_PDF_URI, pdfUri);
+        args.putString(ARG_PDF_NAME, pdfName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_reader, container, false);
+        pdfView = view.findViewById(R.id.pdfView);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // 1️⃣ From inside app (OrganizerFragment)
+        if (getArguments() != null) {
+            pdfUri = getArguments().getParcelable("pdf_uri");
+            pdfName = getArguments().getString("pdf_name");
+        }
+
+        // 2️⃣ From external apps (WhatsApp, Files, etc.)
+        if (pdfUri == null && getActivity() != null) {
+            Intent intent = getActivity().getIntent();
+            if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
+                pdfUri = intent.getData();
+            }
+        }
+
+        if (pdfUri == null) {
+            Toast.makeText(getContext(), "PDF not found", Toast.LENGTH_SHORT).show();
+            requireActivity().onBackPressed();
+            return;
+        }
+
+        if (pdfName != null) {
+            requireActivity().setTitle(pdfName);
+        }
+
+        openPdf(pdfUri);
+    }
+
+    private void openPdf(Uri uri) {
+        pdfView.fromUri(uri)
+                .defaultPage(pageNumber)
+                .enableSwipe(true)
+                .enableDoubletap(true)
+                .onPageChange(this)
+                .onLoad(this)
+                .onError(this)
+                .scrollHandle(new DefaultScrollHandle(getContext()))
+                .spacing(8)
+                .load();
+    }
+
+    @Override
+    public void onPageChanged(int page, int pageCount) {
+        pageNumber = page;
+        requireActivity().setTitle((page + 1) + " / " + pageCount);
+    }
+
+    @Override
+    public void loadComplete(int nbPages) {
+        // PDF loaded successfully
+    }
+
+    @Override
+    public void onError(Throwable t) {
+        Toast.makeText(getContext(), "Failed to open PDF", Toast.LENGTH_LONG).show();
+        t.printStackTrace();
+    }
+}
+
 
 // latest working code....
 //9_02_2026:10:33
-
+/*
 package com.smartpdfsuite.fragments;
 
 import android.content.Intent;
@@ -140,7 +253,7 @@ public class ReaderFragment extends Fragment
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(Intent.createChooser(intent, "Share PDF"));
     }
-}
+}*/
 
 
 

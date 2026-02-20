@@ -17,6 +17,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         ThemeUtils.applyTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -88,6 +90,22 @@ public class MainActivity extends AppCompatActivity {
         handleIncomingIntent(getIntent());
     }
 
+   /* private void handleExternalPdfIntent(Intent intent) {
+        if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri pdfUri = intent.getData();
+
+            if (pdfUri != null) {
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("pdf_uri", pdfUri);
+
+                NavController navController =
+                        Navigation.findNavController(this, R.id.nav_host_fragment);
+
+                navController.navigate(R.id.navigation_reader, bundle);
+            }
+        }
+    }*/
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -105,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 navController.navigate(R.id.navigation_reader, bundle);
             }
         }
+
     }
 
     private void setupPermissionLauncher() {

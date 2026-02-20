@@ -14,6 +14,7 @@ import android.util.Log;
 import android.media.MediaScannerConnection; // Added for MediaStore indexing
 
 import java.io.File; // Added for MediaScannerConnection
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -197,6 +198,16 @@ public class ImageUtils {
                 }
             }
         }
+    }
+
+    public static Uri saveBitmapToCache(Context context, Bitmap bitmap) {
+        File file = new File(context.getCacheDir(), "cropped_" + System.currentTimeMillis() + ".jpg");
+        try (OutputStream os = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, os);
+        } catch (Exception e) {
+            return null;
+        }
+        return Uri.fromFile(file);
     }
 
     /**
