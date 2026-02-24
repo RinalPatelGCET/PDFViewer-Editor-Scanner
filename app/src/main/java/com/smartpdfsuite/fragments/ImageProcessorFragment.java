@@ -58,6 +58,17 @@ public class ImageProcessorFragment extends Fragment {
 
         // Retrieve the initial image URI passed from ScannerFragment
         if (getArguments() != null) {
+            String uriString = getArguments().getString("imageUri");
+            if (uriString != null) {
+                imageUri = Uri.parse(uriString);
+                currentDisplayImageUri = imageUri;
+            }
+            else {
+                Log.e(TAG, "No image string received for processing.");
+                Toast.makeText(getContext(), "Error: No image to process.", Toast.LENGTH_SHORT).show();
+            }
+        }
+        /*if (getArguments() != null) {
             imageUri = getArguments().getParcelable("imageUri");
             if (imageUri == null) {
                 Log.e(TAG, "No image URI received for processing.");
@@ -69,7 +80,7 @@ public class ImageProcessorFragment extends Fragment {
             }
             currentDisplayImageUri = imageUri; // Initially, the displayed image is the captured one
         }
-
+*/
         // Initialize the SAF launcher for creating PDF documents
         createPdfLauncher = registerForActivityResult(new ActivityResultContracts.CreateDocument("application/pdf"), uri -> {
             if (uri != null) {
