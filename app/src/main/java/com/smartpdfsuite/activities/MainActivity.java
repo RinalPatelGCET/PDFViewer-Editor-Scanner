@@ -25,6 +25,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.smartpdfsuite.R;
+import com.smartpdfsuite.fragments.ReaderFragment;
 import com.smartpdfsuite.utils.PermissionUtils;
 import com.smartpdfsuite.utils.ThemeUtils;
 import com.smartpdfsuite.viewmodels.HomeViewModel;
@@ -118,8 +119,15 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             Uri pdfUri = intent.getData();
             if (pdfUri != null) {
-                Bundle bundle = new Bundle();
+                /*Bundle bundle = new Bundle();
                 bundle.putParcelable("pdfUri", pdfUri);
+                navController.navigate(R.id.navigation_reader, bundle);*/
+                Bundle bundle = new Bundle();
+                bundle.putString(ReaderFragment.ARG_PDF_URI, pdfUri.toString());
+                bundle.putString(
+                        ReaderFragment.ARG_PDF_NAME,
+                        "External PDF"
+                );
                 navController.navigate(R.id.navigation_reader, bundle);
             }
         }

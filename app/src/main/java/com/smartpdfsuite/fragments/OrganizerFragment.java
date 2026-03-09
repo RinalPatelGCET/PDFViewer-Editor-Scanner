@@ -197,8 +197,8 @@ public class OrganizerFragment extends Fragment
 //        bundle.putParcelable("pdfUri", pdf.getUri());
 //
 //        navController.navigate(R.id.navigation_reader, bundle);
-
-        NavController navController =
+/*update on 7_03_26*/
+        /*NavController navController =
                 Navigation.findNavController(requireView());
 
         Bundle bundle = new Bundle();
@@ -206,6 +206,23 @@ public class OrganizerFragment extends Fragment
                 ReaderFragment.ARG_PDF_URI,
                 pdf.getUri()
         );
+        bundle.putString(
+                ReaderFragment.ARG_PDF_NAME,
+                pdf.getName()
+        );
+
+        navController.navigate(R.id.navigation_reader, bundle);*/
+
+        NavController navController =
+                Navigation.findNavController(requireView());
+
+        Bundle bundle = new Bundle();
+
+        bundle.putString(
+                ReaderFragment.ARG_PDF_URI,
+                pdf.getUri().toString()
+        );
+
         bundle.putString(
                 ReaderFragment.ARG_PDF_NAME,
                 pdf.getName()

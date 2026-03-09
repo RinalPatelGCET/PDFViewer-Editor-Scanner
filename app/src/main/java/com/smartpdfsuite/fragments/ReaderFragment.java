@@ -17,6 +17,8 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 import com.smartpdfsuite.R;
 
+import java.io.InputStream;
+
 public class ReaderFragment extends Fragment
         implements OnPageChangeListener, OnLoadCompleteListener, OnErrorListener {
 
@@ -55,21 +57,71 @@ public class ReaderFragment extends Fragment
 
         // 1️⃣ From inside app (OrganizerFragment)
         if (getArguments() != null) {
-            pdfUri = getArguments().getParcelable("pdf_uri");
-            pdfName = getArguments().getString("pdf_name");
+            //pdfUri = getArguments().getParcelable("pdf_uri");
+            String uriString =
+                    getArguments().getString(ARG_PDF_URI);
+
+            pdfName =
+                    getArguments().getString(ARG_PDF_NAME);
+
+            if (uriString != null) {
+                pdfUri = Uri.parse(uriString);
+            }
+           /* String uriString = getArguments().getString("pdfUri");
+            if (uriString != null) {
+                pdfUri = Uri.parse(uriString);
+            }
+            pdfName = getArguments().getString("pdf_name");*/
         }
 
         // 2️⃣ From external apps (WhatsApp, Files, etc.)
         if (pdfUri == null && getActivity() != null) {
             Intent intent = getActivity().getIntent();
-            if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
+           /* if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
                 pdfUri = intent.getData();
+            }*/
+            if (intent != null) {
+
+                if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+                    pdfUri = intent.getData();
+                } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
+                    pdfUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                }
+
+               /* if (pdfUri != null) {
+                    requireActivity().getContentResolver().takePersistableUriPermission(
+                            pdfUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    );
+                }*/
+                if (pdfUri != null) {
+
+                    try {
+
+                        InputStream inputStream =
+                                requireContext()
+                                        .getContentResolver()
+                                        .openInputStream(pdfUri);
+
+                        pdfView.fromStream(inputStream)
+                                .enableSwipe(true)
+                                .swipeHorizontal(false)
+                                .enableDoubletap(true)
+                                .defaultPage(0)
+                                .load();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
         if (pdfUri == null) {
             Toast.makeText(getContext(), "PDF not found", Toast.LENGTH_SHORT).show();
-            requireActivity().onBackPressed();
+//            requireActivity().onBackPressed();
+            requireActivity().runOnUiThread(() ->
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed());
             return;
         }
 
@@ -81,7 +133,26 @@ public class ReaderFragment extends Fragment
     }
 
     private void openPdf(Uri uri) {
-        pdfView.fromUri(uri)
+        try {
+
+            pdfView.fromUri(uri)
+                    .defaultPage(pageNumber)
+                    .enableSwipe(true)
+                    .enableDoubletap(true)
+                    .onPageChange(this)
+                    .onLoad(this)
+                    .onError(this)
+                    .scrollHandle(new DefaultScrollHandle(getContext()))
+                    .spacing(8)
+                    .load();
+
+        } catch (Exception e) {
+
+            Toast.makeText(getContext(), "Cannot open this PDF", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+
+        }
+       /* pdfView.fromUri(uri)
                 .defaultPage(pageNumber)
                 .enableSwipe(true)
                 .enableDoubletap(true)
@@ -90,7 +161,7 @@ public class ReaderFragment extends Fragment
                 .onError(this)
                 .scrollHandle(new DefaultScrollHandle(getContext()))
                 .spacing(8)
-                .load();
+                .load();*/
     }
 
     @Override

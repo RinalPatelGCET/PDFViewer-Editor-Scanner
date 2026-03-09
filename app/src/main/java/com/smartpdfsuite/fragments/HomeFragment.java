@@ -32,6 +32,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickListener {
 
     private static final int STORAGE_PERMISSION_CODE = 101;
@@ -201,8 +203,24 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
 */
 
     public void onPdfClick(PdfDocument pdfDocument) {
+        NavController navController =
+                Navigation.findNavController(requireView());
 
-        ReaderFragment readerFragment =
+        Bundle bundle = new Bundle();
+
+        bundle.putString(
+                ReaderFragment.ARG_PDF_URI,
+                pdfDocument.getUri().toString()
+        );
+
+        bundle.putString(
+                ReaderFragment.ARG_PDF_NAME,
+                pdfDocument.getName()
+        );
+
+        navController.navigate(R.id.navigation_reader, bundle);
+
+     /*   ReaderFragment readerFragment =
                 ReaderFragment.newInstance(
                         pdfDocument.getUri(),
                         pdfDocument.getName()
@@ -213,7 +231,7 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
                 .beginTransaction()
                 .replace(R.id.fragment_container, readerFragment)
                 .addToBackStack(null)
-                .commit();
+                .commit();*/
     }
     @Override
     public void onPdfLongClick(PdfDocument pdfDocument) {
