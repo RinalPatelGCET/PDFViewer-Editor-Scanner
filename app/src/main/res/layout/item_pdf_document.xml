@@ -69,7 +69,19 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/more_options"
+            android:id="@+id/btn_share"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_share"
+            android:layout_marginEnd="12dp"
+            android:tint="@color/black"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"/>
+        <ImageView
+            android:id="@+id/btn_more"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"

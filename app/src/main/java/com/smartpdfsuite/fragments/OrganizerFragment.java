@@ -31,8 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class OrganizerFragment extends Fragment
-        implements PdfListAdapter.OnPdfClickListener {
+public class OrganizerFragment extends Fragment implements PdfListAdapter.OnPdfClickListener {
 
     private OrganizerViewModel viewModel;
 
@@ -241,6 +240,24 @@ public class OrganizerFragment extends Fragment
 
         // TODO: Bottom sheet (Rename / Share / Delete / Properties)
     }
+
+    //add below code 20/03/2026
+    @Override
+    public void onRenameClick(PdfDocument pdfDocument) {
+        Toast.makeText(getContext(), "Rename: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMoveClick(PdfDocument pdfDocument) {
+        Toast.makeText(getContext(), "Move: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteClick(PdfDocument pdfDocument) {
+        Toast.makeText(getContext(), "Delete: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+
 }
 
 

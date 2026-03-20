@@ -55,6 +55,7 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
 
         pdfRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         pdfListAdapter = new PdfListAdapter(pdfList, this);
+ /*       pdfListAdapter = new PdfListAdapter(requireContext(), pdfList, this);*/
         pdfRecyclerView.setAdapter(pdfListAdapter);
 
         checkStoragePermissionAndLoad();
@@ -119,7 +120,7 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
         updateUI();
     }
 
-    private void loadPdfsFromMediaStore(Context context) {
+   /* private void loadPdfsFromMediaStore(Context context) {
         Uri collection = MediaStore.Files.getContentUri("external");
         String[] projection = {
                 MediaStore.Files.FileColumns._ID,
@@ -138,13 +139,78 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
                     String id = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
                     String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME));
                     long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE));
-                    long dateModified = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED));
+                    long dateModified = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED))* 1000;
                     Uri uri = Uri.withAppendedPath(collection, id);
 
                     pdfList.add(new PdfDocument(id, name, uri, null, size, dateModified));
                     Log.d("HomeFragment", "MediaStore PDF: " + name);
                 } while (cursor.moveToNext());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    private void loadPdfsFromMediaStore(Context context) {
+
+        Uri collection = MediaStore.Files.getContentUri("external");
+
+        String[] projection = {
+                MediaStore.Files.FileColumns._ID,
+                MediaStore.Files.FileColumns.DISPLAY_NAME,
+                MediaStore.Files.FileColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_MODIFIED
+        };
+
+        String selection = MediaStore.Files.FileColumns.MIME_TYPE + "=?";
+        String[] selectionArgs = {"application/pdf"};
+        String sortOrder = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC";
+
+        try (Cursor cursor = context.getContentResolver().query(
+                collection,
+                projection,
+                selection,
+                selectionArgs,
+                sortOrder
+        )) {
+
+            if (cursor != null && cursor.moveToFirst()) {
+
+                do {
+
+                    String id = cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    MediaStore.Files.FileColumns._ID));
+
+                    String name = cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    MediaStore.Files.FileColumns.DISPLAY_NAME));
+
+                    long size = cursor.getLong(
+                            cursor.getColumnIndexOrThrow(
+                                    MediaStore.Files.FileColumns.SIZE));
+
+                    // 🔥 IMPORTANT FIX
+                    long dateModified = cursor.getLong(
+                            cursor.getColumnIndexOrThrow(
+                                    MediaStore.Files.FileColumns.DATE_MODIFIED)) * 1000;
+
+                    Uri uri = Uri.withAppendedPath(collection, id);
+
+                    pdfList.add(new PdfDocument(
+                            id,
+                            name,
+                            uri,
+                            null,
+                            size,
+                            dateModified
+                    ));
+
+                    Log.d("HomeFragment", "PDF Loaded: " + name);
+
+                } while (cursor.moveToNext());
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -236,5 +302,20 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
     @Override
     public void onPdfLongClick(PdfDocument pdfDocument) {
         Toast.makeText(getContext(), "Long pressed: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+    }
+    //add below code 20/03/2026
+    @Override
+    public void onRenameClick(PdfDocument pdfDocument) {
+        Toast.makeText(getContext(), "Rename: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMoveClick(PdfDocument pdfDocument) {
+        Toast.makeText(getContext(), "Move: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteClick(PdfDocument pdfDocument) {
+        Toast.makeText(getContext(), "Delete: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,7 +1,9 @@
 package com.smartpdfsuite.fragments;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +31,22 @@ import com.smartpdfsuite.viewmodels.ScannerViewModel;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.smartpdfsuite.adapters.FilterAdapter;
+import com.smartpdfsuite.models.FilterModel;
+import com.smartpdfsuite.utils.ImageUtils;
 
 public class ImageProcessorFragment extends Fragment {
 
+
+    private RecyclerView filterRecycler;
+    private FilterAdapter filterAdapter;
     private static final String TAG = "ImageProcessorFragment";
     private Uri imageUri; // The initial captured image URI received from ScannerFragment
     private ImageView capturedImageView;
@@ -48,6 +62,8 @@ public class ImageProcessorFragment extends Fragment {
     // This URI will represent the image currently displayed and being processed.
     // It starts with `imageUri` and gets updated to `outputProcessedUri` after processing.
     private Uri currentDisplayImageUri;
+    private Uri originalImageUri;
+
 
     // ActivityResultLauncher for Storage Access Framework (SAF) to let user choose PDF save location
     private ActivityResultLauncher<String> createPdfLauncher;
@@ -56,8 +72,26 @@ public class ImageProcessorFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Retrieve the initial image URI passed from ScannerFragment
+        // for filter 12_03_2026
         if (getArguments() != null) {
+
+            String uriString = getArguments().getString("imageUri");
+
+            if (uriString != null) {
+
+                originalImageUri = Uri.parse(uriString);
+
+                // initially show original image
+                currentDisplayImageUri = originalImageUri;
+
+            } else {
+
+                Log.e(TAG, "No image received");
+                Toast.makeText(getContext(), "Error: No image to process", Toast.LENGTH_SHORT).show();
+            }
+        }
+        // Retrieve the initial image URI passed from ScannerFragment
+        /*if (getArguments() != null) {
             String uriString = getArguments().getString("imageUri");
             if (uriString != null) {
                 imageUri = Uri.parse(uriString);
@@ -67,7 +101,7 @@ public class ImageProcessorFragment extends Fragment {
                 Log.e(TAG, "No image string received for processing.");
                 Toast.makeText(getContext(), "Error: No image to process.", Toast.LENGTH_SHORT).show();
             }
-        }
+        }*/
         /*if (getArguments() != null) {
             imageUri = getArguments().getParcelable("imageUri");
             if (imageUri == null) {
@@ -120,10 +154,51 @@ public class ImageProcessorFragment extends Fragment {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         organizerViewModel = new ViewModelProvider(requireActivity()).get(OrganizerViewModel.class);
 
+        // add filters 12_03_2026
+
+        filterRecycler = view.findViewById(R.id.filter_recycler);
+
+        filterRecycler.setLayoutManager(
+                new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false)
+        );
         // Display the initial captured image
         if (currentDisplayImageUri != null) {
             Glide.with(this).load(currentDisplayImageUri).into(capturedImageView);
+            try {
+
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                        requireContext().getContentResolver(),
+                        originalImageUri
+                );
+
+                generateFilterPreviews(bitmap);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
+
+
+
+
+       /* List<FilterModel> filters = new ArrayList<>();
+
+        filters.add(new FilterModel("Original"));
+        filters.add(new FilterModel("Auto"));
+        filters.add(new FilterModel("Docs"));
+        filters.add(new FilterModel("No Shadow"));
+        filters.add(new FilterModel("Color"));
+        filters.add(new FilterModel("Enhance2"));
+        filters.add(new FilterModel("Black & White"));
+        filters.add(new FilterModel("Gray"));
+        filters.add(new FilterModel("Invert"));
+
+        filterAdapter = new FilterAdapter(filters, filterName -> applyFilter(filterName));
+
+        filterRecycler.setAdapter(filterAdapter);*/
+
+
 
         // --- Set up UI element listeners ---
 
@@ -206,6 +281,109 @@ public class ImageProcessorFragment extends Fragment {
                     break;
             }
         });
+    }
+
+    private void applyFilter(String filterName) {
+
+        try{
+
+            // ⭐ ALWAYS load original image
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                    requireContext().getContentResolver(),
+                    originalImageUri
+            );
+
+            Bitmap result;
+
+            switch (filterName){
+                case "Original":
+                    result = bitmap;
+                    currentDisplayImageUri = originalImageUri;
+                    break;
+
+                case "Auto":
+                    result = ImageUtils.autoEnhance(bitmap);
+                    break;
+
+                case "Docs":
+                    result = ImageUtils.documentMode(bitmap);
+                    break;
+
+                case "No Shadow":
+                    result = ImageUtils.removeShadow(bitmap);
+                    break;
+
+                case "Color":
+                    result = ImageUtils.colorBoost(bitmap);
+                    break;
+
+                case "Enhance2":
+                    result = ImageUtils.enhance2(bitmap);
+                    break;
+
+                case "Black & White":
+                    result = ImageUtils.blackWhite(bitmap);
+                    break;
+
+                case "Gray":
+                    result = ImageUtils.gray(bitmap);
+                    break;
+
+                case "Invert":
+                    result = ImageUtils.invert(bitmap);
+                    break;
+
+                default:
+                    result = bitmap;
+            }
+
+            // show preview
+            capturedImageView.setImageBitmap(result);
+
+            // Save filtered bitmap (except original)
+            if (!filterName.equals("Original")) {
+
+                Uri filteredUri = ImageUtils.saveBitmapToCache(requireContext(), result);
+
+                if (filteredUri != null) {
+                    currentDisplayImageUri = filteredUri;
+                }
+            }
+            /*// save filtered bitmap
+            Uri filteredUri = ImageUtils.saveBitmapToCache(requireContext(), result);
+
+            if (filteredUri != null) {
+                currentDisplayImageUri = filteredUri;
+            }*/
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void generateFilterPreviews(Bitmap originalBitmap) {
+
+        List<FilterModel> filters = new ArrayList<>();
+
+        Bitmap thumb = Bitmap.createScaledBitmap(originalBitmap, 200, 200, false);
+
+        filters.add(new FilterModel("Original", thumb));
+        filters.add(new FilterModel("Auto", ImageUtils.autoEnhance(thumb)));
+        filters.add(new FilterModel("Docs", ImageUtils.documentMode(thumb)));
+        filters.add(new FilterModel("No Shadow", ImageUtils.removeShadow(thumb)));
+        filters.add(new FilterModel("Color", ImageUtils.colorBoost(thumb)));
+        filters.add(new FilterModel("Enhance2", ImageUtils.enhance2(thumb)));
+        filters.add(new FilterModel("Black & White", ImageUtils.blackWhite(thumb)));
+        filters.add(new FilterModel("Gray", ImageUtils.gray(thumb)));
+        filters.add(new FilterModel("Invert", ImageUtils.invert(thumb)));
+
+        filterAdapter = new FilterAdapter(filters, filterName -> applyFilter(filterName));
+
+       /* filterRecycler.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
+        );*/
+
+        filterRecycler.setAdapter(filterAdapter);
     }
 
     /**
