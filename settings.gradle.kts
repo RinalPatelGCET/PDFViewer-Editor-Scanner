@@ -1,4 +1,4 @@
-pluginManagement {
+/*pluginManagement {
     repositories {
         google {
             content {
@@ -22,5 +22,26 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "PDF Viewer-Editor-Scanner"
+include(":app")*/
+
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven("https://jitpack.io")
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+}
+
+rootProject.name = "PDFViewer-Editor-Scanner"
 include(":app")
- 

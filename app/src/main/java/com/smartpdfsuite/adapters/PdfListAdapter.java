@@ -1,15 +1,21 @@
 package com.smartpdfsuite.adapters;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.smartpdfsuite.R;
-import com.example.pdfviewer_editor_scanner.R;
+import com.smartpdfsuite.R;
+
 import com.smartpdfsuite.models.PdfDocument;
 
 import java.text.SimpleDateFormat;
@@ -20,6 +26,7 @@ import java.util.Locale;
 
     private List<PdfDocument> pdfList;
     private OnPdfClickListener listener;
+    private Context context;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
 
     public PdfListAdapter(List<PdfDocument> pdfList, OnPdfClickListener listener) {
@@ -48,13 +55,61 @@ import java.util.Locale;
         holder.pdfDateModified.setText(dateFormat.format(pdf.getDateModified()));
 
         holder.itemView.setOnClickListener(v -> listener.onPdfClick(pdf));
+
+        // ✅ SHARE BUTTON
+        holder.shareBtn.setOnClickListener(v -> sharePdf(pdf));
+
+        // ✅ THREE DOT MENU
+        holder.moreBtn.setOnClickListener(v -> showPopupMenu(v, pdf));
         holder.itemView.setOnLongClickListener(v -> {
             listener.onPdfLongClick(pdf);
             return true;
         });
     }
 
-    @Override
+    private void sharePdf(PdfDocument pdf) {
+        try {
+            Uri uri = pdf.getUri();
+
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("application/pdf");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            context.startActivity(Intent.createChooser(shareIntent, "Share PDF"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showPopupMenu(View view, PdfDocument pdf) {
+
+        PopupMenu popup = new PopupMenu(view.getContext(), view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_pdf_options, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.menu_rename) {
+                listener.onRenameClick(pdf);
+                return true;
+
+            } else if (id == R.id.menu_move) {
+                listener.onMoveClick(pdf);
+                return true;
+
+            } else if (id == R.id.menu_delete) {
+                listener.onDeleteClick(pdf);
+                return true;
+            }
+
+            return false;
+        });
+
+        popup.show();
+    }
+        @Override
     public int getItemCount() {
         return pdfList.size();
     }
@@ -68,17 +123,24 @@ import java.util.Locale;
 
     public static class PdfViewHolder extends RecyclerView.ViewHolder {
         TextView pdfName, pdfSize, pdfDateModified;
+        ImageView shareBtn, moreBtn;
 
         public PdfViewHolder(@NonNull View itemView) {
             super(itemView);
             pdfName = itemView.findViewById(R.id.pdf_name);
             pdfSize = itemView.findViewById(R.id.pdf_size);
             pdfDateModified = itemView.findViewById(R.id.pdf_date_modified);
+
+            shareBtn = itemView.findViewById(R.id.btn_share);
+            moreBtn = itemView.findViewById(R.id.btn_more);
         }
     }
 
     public interface OnPdfClickListener {
         void onPdfClick(PdfDocument pdfDocument);
         void onPdfLongClick(PdfDocument pdfDocument);
+        void onRenameClick(PdfDocument pdfDocument);
+        void onMoveClick(PdfDocument pdfDocument);
+        void onDeleteClick(PdfDocument pdfDocument);
     }
 }

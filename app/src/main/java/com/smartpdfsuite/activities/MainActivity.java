@@ -1,6 +1,217 @@
+
 package com.smartpdfsuite.activities;
 
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.smartpdfsuite.R;
+import com.smartpdfsuite.fragments.ReaderFragment;
+import com.smartpdfsuite.utils.PermissionUtils;
+import com.smartpdfsuite.utils.ThemeUtils;
+import com.smartpdfsuite.viewmodels.HomeViewModel;
+
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+
+    private NavController navController;
+    private ActivityResultLauncher<String[]> permissionLauncher;
+    private boolean permissionsHandled = false;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeUtils.applyTheme(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        // Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        BottomNavigationView bottomNav = findViewById(R.id.nav_view);
+
+        // NavHostFragment (SAFE WAY)
+        NavHostFragment navHostFragment =
+                (NavHostFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment);
+
+        if (navHostFragment == null) {
+            Toast.makeText(this, "Navigation error", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        navController = navHostFragment.getNavController();
+
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(
+                        R.id.navigation_home,
+                        R.id.navigation_maker,
+                        R.id.navigation_editor,
+                        R.id.navigation_scanner,
+                        R.id.navigation_files
+                ).build();
+
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(bottomNav, navController);
+
+        setupPermissionLauncher();
+
+        if (savedInstanceState == null) {
+            checkAndRequestPermissions();
+        } else {
+            permissionsHandled = savedInstanceState.getBoolean("permissionsHandled", false);
+            if (PermissionUtils.hasRequiredPermissions(this)) {
+                loadInitialPdfData();
+            }
+        }
+
+        handleIncomingIntent(getIntent());
+    }
+
+   /* private void handleExternalPdfIntent(Intent intent) {
+        if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri pdfUri = intent.getData();
+
+            if (pdfUri != null) {
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("pdf_uri", pdfUri);
+
+                NavController navController =
+                        Navigation.findNavController(this, R.id.nav_host_fragment);
+
+                navController.navigate(R.id.navigation_reader, bundle);
+            }
+        }
+    }*/
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIncomingIntent(intent);
+    }
+
+    private void handleIncomingIntent(Intent intent) {
+        if (intent == null || navController == null) return;
+
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri pdfUri = intent.getData();
+            if (pdfUri != null) {
+                /*Bundle bundle = new Bundle();
+                bundle.putParcelable("pdfUri", pdfUri);
+                navController.navigate(R.id.navigation_reader, bundle);*/
+                Bundle bundle = new Bundle();
+                bundle.putString(ReaderFragment.ARG_PDF_URI, pdfUri.toString());
+                bundle.putString(
+                        ReaderFragment.ARG_PDF_NAME,
+                        "External PDF"
+                );
+                navController.navigate(R.id.navigation_reader, bundle);
+            }
+        }
+
+    }
+
+    private void setupPermissionLauncher() {
+        permissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    permissionsHandled = true;
+                    boolean allGranted = true;
+
+                    for (Map.Entry<String, Boolean> entry : result.entrySet()) {
+                        if (!entry.getValue()) {
+                            allGranted = false;
+                            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, entry.getKey())) {
+                                showPermissionPermanentlyDeniedDialog();
+                                return;
+                            }
+                        }
+                    }
+
+                    if (allGranted) {
+                        loadInitialPdfData();
+                    } else {
+                        Toast.makeText(this,
+                                R.string.permission_denied_message,
+                                Toast.LENGTH_LONG).show();
+                        loadInitialPdfData();
+                    }
+                }
+        );
+    }
+
+    private void checkAndRequestPermissions() {
+        if (!PermissionUtils.hasRequiredPermissions(this)) {
+            permissionLauncher.launch(PermissionUtils.getRequiredPermissions());
+        } else {
+            permissionsHandled = true;
+            loadInitialPdfData();
+        }
+    }
+
+    private void showPermissionPermanentlyDeniedDialog() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Permission Required")
+                .setMessage("Please enable permissions manually from Settings to access PDF files.")
+                .setPositiveButton("Open Settings", (d, w) -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.fromParts("package", getPackageName(), null));
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", null)
+                .setCancelable(false)
+                .show();
+    }
+
+    private void loadInitialPdfData() {
+        HomeViewModel homeViewModel =
+                new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel.loadPdfsFromStorage(this);
+        Log.d(TAG, "PDF data loading triggered");
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return navController != null && navController.navigateUp()
+                || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("permissionsHandled", permissionsHandled);
+    }
+}
+
+
+
+//hide on 18-01-2026
+//package com.smartpdfsuite.activities;
+
+/*import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -26,8 +237,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-/*import com.smartpdfsuite.R;*/
-import com.example.pdfviewer_editor_scanner.R;
+import com.smartpdfsuite.R;
+
 import com.smartpdfsuite.fragments.ReaderFragment;
 import com.smartpdfsuite.utils.PermissionUtils;
 import com.smartpdfsuite.utils.ThemeUtils;
@@ -236,281 +447,12 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onSupportNavigateUp();
     }
-}
-
-
-/*package com.smartpdfsuite.activities;
-
-import android.content.DialogInterface; // Add this import
-import android.content.Intent;
-import android.content.pm.PackageManager; // Add this import
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.Settings; // Add this import
-import android.util.Log;
-import android.view.MenuItem;
-import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat; // Add this import
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.lifecycle.ViewModelProvider; // Add this import
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder; // Add this import
-//import com.smartpdfsuite.R;
-import com.example.pdfviewer_editor_scanner.R;
-import com.smartpdfsuite.fragments.ReaderFragment;
-import com.smartpdfsuite.utils.PermissionUtils;
-import com.smartpdfsuite.utils.ThemeUtils;
-import com.smartpdfsuite.viewmodels.HomeViewModel; // Add this import
-import com.smartpdfsuite.viewmodels.OrganizerViewModel; // Add this import (if you want to refresh Organizer too)
-
-
-import java.util.Map;
-
-public class MainActivity extends AppCompatActivity {
-
-    private static final String TAG = "MainActivity";
-    private NavController navController;
-    private ActivityResultLauncher<String[]> requestPermissionLauncher;
-
-    // Flag to track if permissions have been initially handled to avoid re-prompting on config changes
-    private boolean permissionsHandled = false;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ThemeUtils.applyTheme(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-
-        // Defer NavController finding and setup to ensure NavHostFragment is fully initialized
-        // This is a common pattern to avoid "NavController not found" errors in Activity's onCreate
-        findViewById(R.id.nav_host_fragment).post(() -> {
-            try {
-                // Find the NavController after the view hierarchy is stable
-                navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-
-                // Setup AppBarConfiguration (for ActionBar/Toolbar integration with NavController)
-                AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.navigation_home, R.id.navigation_maker, R.id.navigation_editor,
-                        R.id.navigation_scanner, R.id.navigation_files)
-                        .build();
-
-                // Link ActionBar/Toolbar with NavController for title updates and Up button
-                NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-                // Link BottomNavigationView with NavController for navigation
-                NavigationUI.setupWithNavController(navView, navController);
-
-                Log.d(TAG, "NavController successfully initialized and set up.");
-
-                // Only check permissions if they haven't been handled yet (e.g., after initial launch, not orientation change)
-                if (savedInstanceState == null) {
-                    checkAndRequestPermissions();
-                } else {
-                    permissionsHandled = savedInstanceState.getBoolean("permissionsHandled", false);
-                    if (PermissionUtils.hasRequiredPermissions(this)) {
-                        loadInitialPdfData();
-                    }
-                }
-
-                // Handle incoming intents (like opening a PDF from outside the app)
-                handleIncomingIntent(getIntent());
-
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "Failed to find NavController or set it up: " + e.getMessage(), e);
-                // This might indicate an issue with your nav graph or FragmentContainerView setup
-                Toast.makeText(this, "Navigation error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-        // Setup permission launcher (can be done earlier as it doesn't depend on NavController)
-        setupPermissionLauncher();
-
-       *//* AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_maker, R.id.navigation_editor, R.id.navigation_scanner, R.id.navigation_files)
-                .build();
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
-
-        setupPermissionLauncher();
-
-        // Only check permissions if they haven't been handled yet (e.g., after initial launch, not orientation change)
-        if (savedInstanceState == null) {
-            checkAndRequestPermissions(); // <--- This is the CRITICAL line for initial permission check
-        } else {
-            // Restore permissionsHandled state if needed
-            permissionsHandled = savedInstanceState.getBoolean("permissionsHandled", false);
-            if (PermissionUtils.hasRequiredPermissions(this)) {
-                // If permissions are already granted (e.g. after a process kill/restart), load data
-                loadInitialPdfData();
-            }
-        }
-
-
-        handleIncomingIntent(getIntent());*//*
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("permissionsHandled", permissionsHandled);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIncomingIntent(intent);
-    }
-
-    private void handleIncomingIntent(Intent intent) {
-        if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
-            Uri pdfUri = intent.getData();
-            if (pdfUri != null) {
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("pdfUri", pdfUri);
-                runOnUiThread(() -> {
-                    navController.navigate(R.id.navigation_reader, bundle);
-                    Toast.makeText(this, "Opening PDF: " + pdfUri.getLastPathSegment(), Toast.LENGTH_LONG).show();
-                });
-            }
-        }
-    }
-
-    private void setupPermissionLauncher() {
-        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-            permissionsHandled = true; // Mark permissions as handled after dialog interaction
-            boolean allGranted = true;
-            for (Map.Entry<String, Boolean> entry : result.entrySet()) {
-                if (!entry.getValue()) {
-                    allGranted = false;
-                    Log.w(TAG, "Permission denied: " + entry.getKey());
-                    // Check if the user denied it permanently ("Don't ask again")
-                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this, entry.getKey())) {
-                        showPermissionPermanentlyDeniedDialog();
-                        return; // Exit as we've shown a more critical dialog
-                    }
-                    // For a normal denial, just proceed with the toast message
-                }
-            }
-
-            if (allGranted) {
-                Log.d(TAG, "All necessary permissions granted.");
-                Toast.makeText(MainActivity.this, "Permissions granted. Loading PDFs...", Toast.LENGTH_SHORT).show();
-                loadInitialPdfData(); // Load data only after permissions are confirmed
-            } else {
-                Toast.makeText(MainActivity.this, R.string.permission_denied_message, Toast.LENGTH_LONG).show();
-                Log.w(TAG, "Some permissions were denied. App functionality may be limited.");
-                // Even if some denied, if essential, you might prompt again or disable features.
-                // For now, load what's possible.
-                loadInitialPdfData();
-            }
-        });
-    }
-
-    private void checkAndRequestPermissions() {
-        if (!PermissionUtils.hasRequiredPermissions(this)) {
-            Log.d(TAG, "Missing permissions. Checking for rationale...");
-            // Check if we should show a rationale for any permission
-            boolean shouldShowRationale = false;
-            for (String permission : PermissionUtils.getRequiredPermissions()) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                    shouldShowRationale = true;
-                    break;
-                }
-            }
-
-            if (shouldShowRationale) {
-                showPermissionRationaleDialog(); // Show custom dialog explaining why
-            } else {
-                Log.d(TAG, "No rationale needed, launching system permission dialog directly.");
-                requestPermissionLauncher.launch(PermissionUtils.getRequiredPermissions()); // Launch system dialog
-            }
-        } else {
-            Log.d(TAG, "All required permissions already granted.");
-            permissionsHandled = true; // Mark as handled
-            loadInitialPdfData(); // Load data if permissions are already granted
-        }
-    }
-
-    *//**
-     * Shows a custom dialog explaining why permissions are needed.
-     *//*
-    private void showPermissionRationaleDialog() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Permissions Required")
-                .setMessage("This app needs Camera permission for PDF scanning and Storage/Media access to read/write PDF files. Please grant these permissions to use all features.")
-                .setPositiveButton("Grant Permissions", (dialog, which) -> {
-                    Log.d(TAG, "User accepted rationale, requesting permissions.");
-                    requestPermissionLauncher.launch(PermissionUtils.getRequiredPermissions());
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    Log.d(TAG, "User denied rationale.");
-                    Toast.makeText(MainActivity.this, R.string.permission_denied_message, Toast.LENGTH_LONG).show();
-                    permissionsHandled = true; // Mark as handled even if denied
-                })
-                .setCancelable(false) // User must make a choice
-                .show();
-    }
-
-    *//**
-     * Shows a dialog informing the user that permissions were permanently denied and how to enable them.
-     *//*
-    private void showPermissionPermanentlyDeniedDialog() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Permissions Permanently Denied")
-                .setMessage("It looks like you've permanently denied some essential permissions. To use all features of Smart PDF Suite, please enable them manually in app settings.")
-                .setPositiveButton("Go to Settings", (dialog, which) -> {
-                    Log.d(TAG, "User clicked to go to settings.");
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    Log.d(TAG, "User cancelled from permanently denied dialog.");
-                    Toast.makeText(MainActivity.this, R.string.permission_denied_message, Toast.LENGTH_LONG).show();
-                    permissionsHandled = true; // Mark as handled
-                })
-                .setCancelable(false)
-                .show();
-    }
-
-
-    *//**
-     * Triggers the loading of PDF data into the Home and Organizer ViewModels.
-     * This should be called only after permissions are granted.
-     *//*
-    private void loadInitialPdfData() {
-        // Ensure ViewModels are initialized and trigger their data loading methods
-        // Scoped to Activity so they can be accessed from MainActivity
-        ViewModelProvider viewModelProvider = new ViewModelProvider(this);
-        HomeViewModel homeViewModel = viewModelProvider.get(HomeViewModel.class);
-        homeViewModel.loadPdfsFromStorage(this); // Trigger loading recent PDFs
-
-        // If you have an OrganizerFragment with its own ViewModel
-        // OrganizerViewModel organizerViewModel = viewModelProvider.get(OrganizerViewModel.class);
-        // organizerViewModel.loadAllPdfs(this); // Trigger loading all PDFs for the organizer
-        Log.d(TAG, "Triggered initial PDF data loading.");
-    }
-
-
-    public void toggleTheme() {
-        ThemeUtils.toggleTheme(this);
-        recreate(); // Recreate activity to apply new theme
-    }
 }*/
+
+//
+
+
+
 
 
 /*
@@ -661,3 +603,4 @@ public class MainActivity extends AppCompatActivity {
         recreate(); // Recreate activity to apply new theme
     }
 }*/
+

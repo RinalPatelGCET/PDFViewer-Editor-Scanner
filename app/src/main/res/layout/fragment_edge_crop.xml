@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    &lt;!&ndash; IMAGE &ndash;&gt;
+    <ImageView
+        android:id="@+id/crop_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
+
+    &lt;!&ndash; CROP OVERLAY (FULL SIZE) &ndash;&gt;
+    <com.smartpdfsuite.views.CropOverlayView
+        android:id="@+id/crop_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    &lt;!&ndash; DONE BUTTON &ndash;&gt;
+    <Button
+        android:id="@+id/btn_crop_done"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:text="Done" />-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/crop_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter" />
+
+    <com.smartpdfsuite.views.CropOverlayView
+        android:id="@+id/crop_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/btn_crop_done"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:text="Done" />
+
+</FrameLayout>
+

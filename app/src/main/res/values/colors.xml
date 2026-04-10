@@ -31,4 +31,11 @@
     <!-- Generic colors that might be used across themes -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Search Field -->
+    <color name="search_bg">#F2F2F2</color>
+    <color name="search_text">#000000</color>
+    <color name="search_hint">#808080</color>
+    <color name="search_icon">#6A1B9A</color>
+
 </resources>

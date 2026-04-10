@@ -14,6 +14,7 @@ import android.util.Log;
 import android.media.MediaScannerConnection; // Added for MediaStore indexing
 
 import java.io.File; // Added for MediaScannerConnection
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +48,6 @@ public class ImageUtils {
             } catch (IOException e) {
                 Log.e(TAG, "Error closing input stream after decodeBounds: " + e.getMessage());
             }
-
 
             int photoW = options.outWidth;
             int photoH = options.outHeight;
@@ -199,6 +199,39 @@ public class ImageUtils {
         }
     }
 
+    public static Uri saveBitmapToCache(Context context, Bitmap bitmap) {
+        /*File file = new File(context.getCacheDir(), "cropped_" + System.currentTimeMillis() + ".jpg");
+        try (OutputStream os = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, os);
+        } catch (Exception e) {
+            return null;
+        }
+        return Uri.fromFile(file);*/
+
+        //apply filter 12_03_2026
+        File cacheDir = new File(context.getCacheDir(), "filtered_images");
+
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        }
+
+        File file = new File(cacheDir, "filtered_" + System.currentTimeMillis() + ".jpg");
+
+        try {
+
+            OutputStream os = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, os);
+            os.flush();
+            os.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return Uri.fromFile(file);
+    }
+
     /**
      * Notifies the MediaStore about a new file, making it discoverable by other apps
      * and visible in galleries/file managers (if it's in public storage).
@@ -218,4 +251,150 @@ public class ImageUtils {
                     Log.d(TAG, "MediaScanner scanned " + path + ". Content URI: " + uri);
                 });
     }
+
+    //Add filters 12_03_2026
+    public static Bitmap autoEnhance(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888, true);
+
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(1.3f);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp, 0, 0, paint);
+
+        return bmp;
+    }
+
+    public static Bitmap documentMode(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888, true);
+
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp, 0, 0, paint);
+
+        return bmp;
+    }
+
+    public static Bitmap removeShadow(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888, true);
+
+        ColorMatrix cm = new ColorMatrix(new float[]{
+                1.4f,0,0,0,-40,
+                0,1.4f,0,0,-40,
+                0,0,1.4f,0,-40,
+                0,0,0,1,0
+        });
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp,0,0,paint);
+
+        return bmp;
+    }
+
+    public static Bitmap colorBoost(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888,true);
+
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(1.8f);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp,0,0,paint);
+
+        return bmp;
+    }
+
+    public static Bitmap enhance2(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888,true);
+
+        ColorMatrix cm = new ColorMatrix(new float[]{
+                1.3f,0,0,0,20,
+                0,1.3f,0,0,20,
+                0,0,1.3f,0,20,
+                0,0,0,1,0
+        });
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp,0,0,paint);
+
+        return bmp;
+    }
+
+    public static Bitmap blackWhite(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888,true);
+
+        ColorMatrix cm = new ColorMatrix(new float[]{
+                0.3f,0.59f,0.11f,0,0,
+                0.3f,0.59f,0.11f,0,0,
+                0.3f,0.59f,0.11f,0,0,
+                0,0,0,1,0
+        });
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp,0,0,paint);
+
+        return bmp;
+    }
+
+    public static Bitmap gray(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888,true);
+
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp,0,0,paint);
+
+        return bmp;
+    }
+
+    public static Bitmap invert(Bitmap src) {
+
+        Bitmap bmp = src.copy(Bitmap.Config.ARGB_8888,true);
+
+        ColorMatrix cm = new ColorMatrix(new float[]{
+                -1,0,0,0,255,
+                0,-1,0,0,255,
+                0,0,-1,0,255,
+                0,0,0,1,0
+        });
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        Canvas canvas = new Canvas(bmp);
+        canvas.drawBitmap(bmp,0,0,paint);
+
+        return bmp;
+    }
+
 }

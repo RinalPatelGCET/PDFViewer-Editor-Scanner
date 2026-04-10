@@ -1,4 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    tools:context="com.smartpdfsuite.fragments.ImageProcessorFragment">
+
+    <!-- Captured Image Preview -->
+
+    <ImageView
+        android:id="@+id/captured_image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="Captured Image"
+        tools:src="@tools:sample/backgrounds/scenic"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/filter_recycler"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Filter RecyclerView -->
+
+    <!--<androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/filter_recycler"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@id/create_pdf_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/filter_recycler"
+        android:layout_width="0dp"
+        android:layout_height="110dp"
+        android:background="#111"
+        android:padding="6dp"
+        app:layout_constraintBottom_toTopOf="@id/create_pdf_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <!-- Process Image Button -->
+
+    <Button
+        android:id="@+id/process_image_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Process Image (Auto Crop / Enhance)"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/create_pdf_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Create PDF Button -->
+
+    <Button
+        android:id="@+id/create_pdf_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Create PDF"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Processing Loader -->
+
+    <ProgressBar
+        android:id="@+id/processing_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--//add above code of filter on 12-03_2026-->
+<!--
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -57,4 +150,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>-->
