@@ -7,10 +7,12 @@
     <item
         android:id="@+id/navigation_maker"
         android:icon="@drawable/ic_add_pdf"
+        android:visible="false"
         android:title="@string/title_maker" />
     <item
         android:id="@+id/navigation_editor"
         android:icon="@drawable/ic_edit_pdf"
+        android:visible="false"
         android:title="@string/title_editor" />
     <item
         android:id="@+id/navigation_scanner"
