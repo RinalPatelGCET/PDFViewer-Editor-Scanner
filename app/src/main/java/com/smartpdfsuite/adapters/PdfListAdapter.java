@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +30,8 @@ import java.util.Locale;
     private Context context;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
 
-    public PdfListAdapter(List<PdfDocument> pdfList, OnPdfClickListener listener) {
+    public PdfListAdapter(Context context, List<PdfDocument> pdfList, OnPdfClickListener listener) {
+        this.context = context;
         this.pdfList = pdfList;
         this.listener = listener;
     }
@@ -74,11 +76,15 @@ import java.util.Locale;
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("application/pdf");
             shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+
+            // 🔥 VERY IMPORTANT
             shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             context.startActivity(Intent.createChooser(shareIntent, "Share PDF"));
+
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(context, "Unable to share file", Toast.LENGTH_SHORT).show();
         }
     }
 

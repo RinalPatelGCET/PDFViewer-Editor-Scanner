@@ -90,7 +90,7 @@ public class OrganizerFragment extends Fragment implements PdfListAdapter.OnPdfC
     }
 
     private void setupRecyclerView() {
-        adapter = new PdfListAdapter(new ArrayList<>(), this);
+        adapter = new PdfListAdapter(requireContext(), new ArrayList<>(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);

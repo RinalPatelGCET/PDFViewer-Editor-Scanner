@@ -1,6 +1,7 @@
 package com.smartpdfsuite.fragments;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +56,7 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
         noPdfsText = view.findViewById(R.id.no_pdfs_text);
 
         pdfRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        pdfListAdapter = new PdfListAdapter(pdfList, this);
+        pdfListAdapter = new PdfListAdapter(requireContext(),pdfList, this);
  /*       pdfListAdapter = new PdfListAdapter(requireContext(), pdfList, this);*/
         pdfRecyclerView.setAdapter(pdfListAdapter);
 
@@ -159,12 +161,14 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
                 MediaStore.Files.FileColumns._ID,
                 MediaStore.Files.FileColumns.DISPLAY_NAME,
                 MediaStore.Files.FileColumns.SIZE,
-                MediaStore.Files.FileColumns.DATE_MODIFIED
+                MediaStore.Files.FileColumns.DATE_MODIFIED,
+                MediaStore.Files.FileColumns.DATA // 🔥 ADD THIS
         };
 
         String selection = MediaStore.Files.FileColumns.MIME_TYPE + "=?";
         String[] selectionArgs = {"application/pdf"};
         String sortOrder = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC";
+
 
         try (Cursor cursor = context.getContentResolver().query(
                 collection,
@@ -185,7 +189,9 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
                     String name = cursor.getString(
                             cursor.getColumnIndexOrThrow(
                                     MediaStore.Files.FileColumns.DISPLAY_NAME));
-
+                    String path = cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    MediaStore.Files.FileColumns.DATA));
                     long size = cursor.getLong(
                             cursor.getColumnIndexOrThrow(
                                     MediaStore.Files.FileColumns.SIZE));
@@ -201,7 +207,7 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
                             id,
                             name,
                             uri,
-                            null,
+                            path,
                             size,
                             dateModified
                     ));
@@ -306,16 +312,132 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
     //add below code 20/03/2026
     @Override
     public void onRenameClick(PdfDocument pdfDocument) {
-        Toast.makeText(getContext(), "Rename: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getContext(), "Rename: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), "Rename: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+        EditText editText = new EditText(requireContext());
+        editText.setText(pdfDocument.getName());
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Rename File")
+                .setView(editText)
+                .setPositiveButton("Rename", (dialog, which) -> {
+
+                    String newName = editText.getText().toString().trim();
+
+                    if (newName.isEmpty()) {
+                        Toast.makeText(getContext(), "Invalid name", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    renameFile(pdfDocument, newName);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+    private void renameFile(PdfDocument pdfDocument, String newName) {
+
+        try {
+            File file = new File(pdfDocument.getPath());
+
+            if (!file.exists()) {
+                Toast.makeText(getContext(), "File not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            File newFile = new File(file.getParent(), newName + ".pdf");
+
+            boolean success = file.renameTo(newFile);
+
+            if (success) {
+                Toast.makeText(getContext(), "Renamed successfully", Toast.LENGTH_SHORT).show();
+
+                // 🔄 Refresh list
+                loadPdfs(requireContext()); // HomeFragment
+                // OR
+                // viewModel.loadAllPdfs(requireContext()); // OrganizerFragment
+
+            } else {
+                Toast.makeText(getContext(), "Rename failed", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onMoveClick(PdfDocument pdfDocument) {
-        Toast.makeText(getContext(), "Move: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getContext(), "Move: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+
+        String[] folders = {"Documents", "Downloads"};
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Move to")
+                .setItems(folders, (dialog, which) -> {
+
+                    File destFolder;
+
+                    if (which == 0) {
+                        destFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+                    } else {
+                        destFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    }
+
+                    moveFile(pdfDocument, destFolder);
+                })
+                .show();
+
     }
+
+    private void moveFile(PdfDocument pdfDocument, File destinationFolder) {
+        try {
+            File sourceFile = new File(pdfDocument.getPath());
+
+            if (!destinationFolder.exists()) {
+                destinationFolder.mkdirs();
+            }
+
+            File destFile = new File(destinationFolder, sourceFile.getName());
+
+            boolean success = sourceFile.renameTo(destFile);
+
+            if (success) {
+                Toast.makeText(getContext(), "Moved successfully", Toast.LENGTH_SHORT).show();
+
+                // Refresh
+                loadPdfs(requireContext()); // Home
+                // OR
+                // viewModel.loadAllPdfs(requireContext()); // Organizer
+
+            } else {
+                Toast.makeText(getContext(), "Move failed", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onDeleteClick(PdfDocument pdfDocument) {
-        Toast.makeText(getContext(), "Delete: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getContext(), "Delete: " + pdfDocument.getName(), Toast.LENGTH_SHORT).show();
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete File")
+                .setMessage("Are you sure you want to delete this file?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteFile(pdfDocument))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void deleteFile(PdfDocument pdfDocument) {
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete File")
+                .setMessage("Are you sure you want to delete this file?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteFile(pdfDocument))
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

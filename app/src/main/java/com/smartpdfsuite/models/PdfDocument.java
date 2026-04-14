@@ -64,7 +64,10 @@ public class PdfDocument implements Parcelable {
     public void setName(String name) { this.name = name; }
     public void setFolder(String folder) { this.folder = folder; }
     public void setTags(List<String> tags) { this.tags = tags; }
-
+    // ✅ Setter (optional but useful)
+    public void setPath(String path) {
+        this.path = path;
+    }
     @Override
     public int describeContents() {
         return 0;
