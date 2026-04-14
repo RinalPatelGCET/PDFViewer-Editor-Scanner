@@ -432,12 +432,28 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
     }
 
     private void deleteFile(PdfDocument pdfDocument) {
+        try {
+            File file = new File(pdfDocument.getPath());
 
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Delete File")
-                .setMessage("Are you sure you want to delete this file?")
-                .setPositiveButton("Delete", (dialog, which) -> deleteFile(pdfDocument))
-                .setNegativeButton("Cancel", null)
-                .show();
+            if (!file.exists()) {
+                Toast.makeText(getContext(), "File not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            boolean deleted = file.delete();
+
+            if (deleted) {
+                Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
+
+                // 🔄 Refresh list
+                loadPdfs(requireContext());
+
+            } else {
+                Toast.makeText(getContext(), "Delete failed", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
