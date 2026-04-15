@@ -7,8 +7,34 @@
     android:background="?android:attr/colorBackground"
     tools:context="com.smartpdfsuite.fragments.ScannerFragment">
 
+    <!-- 🔥 FULL SCREEN CAMERA -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_preview_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 🔥 CAPTURE BUTTON -->
+    <ImageButton
+        android:id="@+id/capture_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/circle_button_bg"
+        android:src="@android:drawable/ic_menu_camera"
+        android:scaleType="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@android:color/white" />
+
+
     <!-- This will be replaced by CameraX PreviewView or a custom camera surface -->
-    <TextView
+   <!-- <TextView
         android:id="@+id/text_scanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +70,7 @@
         android:text="Capture"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />-->
 
     <!-- Other UI elements for enhancement options, flashlight, etc. -->
 

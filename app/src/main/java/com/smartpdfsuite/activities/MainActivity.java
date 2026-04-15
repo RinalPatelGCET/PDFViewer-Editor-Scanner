@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -29,6 +30,7 @@ import com.smartpdfsuite.fragments.ReaderFragment;
 import com.smartpdfsuite.utils.PermissionUtils;
 import com.smartpdfsuite.utils.ThemeUtils;
 import com.smartpdfsuite.viewmodels.HomeViewModel;
+//import android.view.View;
 
 import java.util.Map;
 
@@ -77,6 +79,20 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNav, navController);
 
+
+        // 🔥 ADD THIS HERE
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+
+            if (destination.getId() == R.id.navigation_home ||
+                    destination.getId() == R.id.navigation_scanner ||
+                    destination.getId() == R.id.navigation_files) {
+
+                bottomNav.setVisibility(View.VISIBLE);
+
+            } else {
+                bottomNav.setVisibility(View.GONE);
+            }
+        });
         setupPermissionLauncher();
 
         if (savedInstanceState == null) {
