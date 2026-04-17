@@ -43,7 +43,18 @@ public class CropOverlayView extends View {
 
     public void setImageRect(RectF rect) {
         this.imageRect = rect;
-        initDefaultPoints();
+
+        // 🔥 Set default crop inside image (NOT full screen)
+        float padding = 60f;
+// 🔥 Set crop area INSIDE IMAGE (like your screenshot)
+        points[0].set(rect.left + padding, rect.top + padding);           // TL
+        points[1].set(rect.right - padding, rect.top + padding);          // TR
+        points[2].set(rect.right - padding, rect.bottom - padding);       // BR
+        points[3].set(rect.left + padding, rect.bottom - padding);        // BL
+
+        updateMidPoints();
+
+       // initDefaultPoints();
         invalidate();
     }
 

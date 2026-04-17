@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -45,6 +46,13 @@ public class EdgeCropFragment extends Fragment {
         cropOverlayView = view.findViewById(R.id.crop_overlay);
         Button doneButton = view.findViewById(R.id.btn_crop_done);
 
+        Button rotateLeft = view.findViewById(R.id.btn_rotate_left);
+        Button rotateRight = view.findViewById(R.id.btn_rotate_right);
+
+
+        rotateLeft.setOnClickListener(v -> rotateImage(-90));
+        rotateRight.setOnClickListener(v -> rotateImage(90));
+
         if (getArguments() != null) {
             String uri = getArguments().getString("imageUri");
             if (uri != null) imageUri = Uri.parse(uri);
@@ -63,17 +71,45 @@ public class EdgeCropFragment extends Fragment {
         return view;
     }
 
+
+    private void rotateImage(int angle) {
+        if (bitmap == null) return;
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+
+        bitmap = Bitmap.createBitmap(
+                bitmap,
+                0,
+                0,
+                bitmap.getWidth(),
+                bitmap.getHeight(),
+                matrix,
+                true
+        );
+
+        imageView.setImageBitmap(bitmap);
+
+        // 🔥 Reset overlay after rotation
+        imageView.post(() -> {
+            RectF rect = getBitmapRect();
+            cropOverlayView.setImageRect(rect);
+        });
+    }
+
     private void loadBitmap() {
         try {
-            bitmap = ImageUtils.loadBitmapFromUri(
+            Bitmap original = ImageUtils.loadBitmapFromUri(
                     requireContext().getContentResolver(),
                     imageUri,
                     2048
             );
-            if (bitmap == null) {
+            if (original == null) {
                 Toast.makeText(getContext(), "Invalid image", Toast.LENGTH_SHORT).show();
                 return;
             }
+            // 🔥 FIX ROTATION HERE
+            bitmap = ImageUtils.rotateBitmapIfRequired(requireContext(), original, imageUri);
 
             imageView.setImageBitmap(bitmap);
 
@@ -82,19 +118,6 @@ public class EdgeCropFragment extends Fragment {
                 RectF rect = getBitmapRect();
                 cropOverlayView.setImageRect(rect);
             });
-
-/*
-
-            imageView.post(() -> {
-                cropOverlayView.setBitmapSize(
-                        imageView.getWidth(),
-                        imageView.getHeight()
-                );
-                cropOverlayView.initDefaultCorners();
-            });
-*/
-
-
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "Failed to load image", Toast.LENGTH_SHORT).show();
@@ -198,6 +221,8 @@ public class EdgeCropFragment extends Fragment {
     private float clamp(float v, float min, float max) {
         return Math.max(min, Math.min(v, max));
     }
+
+
 }
 
 

@@ -3,31 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    &lt;!&ndash; IMAGE &ndash;&gt;
-    <ImageView
-        android:id="@+id/crop_image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter" />
-
-    &lt;!&ndash; CROP OVERLAY (FULL SIZE) &ndash;&gt;
-    <com.smartpdfsuite.views.CropOverlayView
-        android:id="@+id/crop_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    &lt;!&ndash; DONE BUTTON &ndash;&gt;
-    <Button
-        android:id="@+id/btn_crop_done"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        android:text="Done" />-->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
     <ImageView
         android:id="@+id/crop_image_view"
         android:layout_width="match_parent"
@@ -46,5 +21,69 @@
         android:layout_gravity="bottom"
         android:text="Done" />
 
-</FrameLayout>
+</FrameLayout>-->
 
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000">
+
+    <!-- Image Container -->
+    <FrameLayout
+        android:id="@+id/image_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/crop_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter" />
+
+        <com.smartpdfsuite.views.CropOverlayView
+            android:id="@+id/crop_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <!-- Bottom Controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="#DD000000"
+        android:padding="10dp">
+
+        <!-- Rotate Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_rotate_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Left" />
+
+            <Button
+                android:id="@+id/btn_rotate_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="Right" />
+        </LinearLayout>
+
+        <!-- Done Button -->
+        <Button
+            android:id="@+id/btn_crop_done"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:text="Done" />
+    </LinearLayout>
+
+</FrameLayout>

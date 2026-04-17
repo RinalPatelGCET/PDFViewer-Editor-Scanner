@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -88,6 +89,16 @@ public class ScannerFragment extends Fragment {
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
+
+        // 🔥 Hide Toolbar
+        if (requireActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) requireActivity())
+                    .getSupportActionBar()
+                    .hide();
+        }
+
+        // 🔥 Hide Bottom Navigation
+        requireActivity().findViewById(R.id.nav_view).setVisibility(View.GONE);
     }
 
     private void setupPermissionLauncher() {
@@ -195,6 +206,15 @@ public class ScannerFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (cameraExecutor != null) cameraExecutor.shutdown();
+        // 🔥 Show Toolbar again
+        if (requireActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) requireActivity())
+                    .getSupportActionBar()
+                    .show();
+        }
+
+        // 🔥 Show Bottom Navigation again
+        requireActivity().findViewById(R.id.nav_view).setVisibility(View.VISIBLE);
     }
 }
 

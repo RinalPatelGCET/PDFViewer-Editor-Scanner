@@ -9,6 +9,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.util.Log;
 import android.media.MediaScannerConnection; // Added for MediaStore indexing
@@ -397,4 +398,53 @@ public class ImageUtils {
         return bmp;
     }
 
+    public static Bitmap rotateBitmapIfRequired(Context context, Bitmap bitmap, Uri uri) {
+        try {
+            InputStream input = context.getContentResolver().openInputStream(uri);
+            ExifInterface exif = new ExifInterface(input);
+
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+            );
+
+            Matrix matrix = new Matrix();
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.postRotate(90);
+                    break;
+
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.postRotate(180);
+                    break;
+
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.postRotate(270);
+                    break;
+
+                default:
+                    return bitmap;
+            }
+
+            Bitmap rotated = Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    0,
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    matrix,
+                    true
+            );
+
+            bitmap.recycle();
+            return rotated;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return bitmap;
+        }
+
+
+    }
 }
