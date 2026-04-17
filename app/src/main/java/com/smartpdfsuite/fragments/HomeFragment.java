@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -62,6 +63,64 @@ public class HomeFragment extends Fragment implements PdfListAdapter.OnPdfClickL
 
         checkStoragePermissionAndLoad();
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // 🔥 Hide Toolbar
+        if (requireActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) requireActivity())
+                    .getSupportActionBar()
+                    .hide();
+        }
+
+        TextView titleText = view.findViewById(R.id.section_title_recent_pdfs);
+
+        // 🔥 Scroll Listener
+        pdfRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 10) {
+                    // 🔼 Scrolling UP → Hide Text
+                    if (titleText.getVisibility() == View.VISIBLE) {
+                        titleText.animate()
+                                .alpha(0f)
+                                .translationY(-titleText.getHeight())
+                                .setDuration(200)
+                                .withEndAction(() -> titleText.setVisibility(View.GONE))
+                                .start();
+                    }
+
+                } else if (dy < -10) {
+                    // 🔽 Scrolling DOWN → Show Text
+                    if (titleText.getVisibility() != View.VISIBLE) {
+                        titleText.setVisibility(View.VISIBLE);
+                        titleText.setAlpha(0f);
+                        titleText.setTranslationY(-titleText.getHeight());
+
+                        titleText.animate()
+                                .alpha(1f)
+                                .translationY(0)
+                                .setDuration(200)
+                                .start();
+                    }
+                }
+            }
+        });
+
+
+    /*    // ✅ 🔥 ADD THIS HERE (elevation effect)
+        pdfRecyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (scrollY > 0) {
+                titleText.setElevation(8f);
+            } else {
+                titleText.setElevation(0f);
+            }
+        });*/
     }
 
     // =========================

@@ -19,6 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 🔥 CAPTURE BUTTON -->
+
     <ImageButton
         android:id="@+id/capture_button"
         android:layout_width="80dp"

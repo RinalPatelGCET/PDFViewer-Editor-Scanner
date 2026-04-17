@@ -63,26 +63,32 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_rotate_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/accent"
                 android:text="Left" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_rotate_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/accent"
                 android:text="Right" />
         </LinearLayout>
 
         <!-- Done Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_crop_done"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/accent"
             android:text="Done" />
     </LinearLayout>
 

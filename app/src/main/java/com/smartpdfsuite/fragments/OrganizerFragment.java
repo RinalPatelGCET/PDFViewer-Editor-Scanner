@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -76,6 +77,13 @@ public class OrganizerFragment extends Fragment implements PdfListAdapter.OnPdfC
         observeViewModel();
 
         viewModel.loadAllPdfs(requireContext());
+
+
+        if (requireActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) requireActivity())
+                    .getSupportActionBar()
+                    .hide();
+        }
     }
 
     private void initViews(View view) {
