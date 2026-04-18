@@ -1,5 +1,6 @@
 package com.smartpdfsuite.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.shockwave.pdfium.PdfPasswordException;
 import com.smartpdfsuite.R;
 
@@ -42,6 +44,7 @@ public class ReaderFragment extends Fragment
     private AlertDialog passwordDialog;
     private com.google.android.material.textfield.TextInputLayout inputLayout;
     private EditText input;
+    private MaterialToolbar toolbar;
 
     public static ReaderFragment newInstance(Uri pdfUri, String pdfName) {
         ReaderFragment fragment = new ReaderFragment();
@@ -52,6 +55,7 @@ public class ReaderFragment extends Fragment
         return fragment;
     }
 
+    @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
     public View onCreateView(
@@ -61,12 +65,15 @@ public class ReaderFragment extends Fragment
 
         View view = inflater.inflate(R.layout.fragment_reader, container, false);
         pdfView = view.findViewById(R.id.pdfView);
+        toolbar = view.findViewById(R.id.toolbar);
+
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         // 1️⃣ From inside app (OrganizerFragment)
         if (getArguments() != null) {
@@ -80,6 +87,15 @@ public class ReaderFragment extends Fragment
             if (uriString != null) {
                 pdfUri = Uri.parse(uriString);
             }
+
+
+            // ✅ Set PDF name
+            if (pdfName != null) {
+                toolbar.setTitle(pdfName);
+            } else {
+                toolbar.setTitle("PDF Viewer");
+            }
+
            /* String uriString = getArguments().getString("pdfUri");
             if (uriString != null) {
                 pdfUri = Uri.parse(uriString);
@@ -259,7 +275,8 @@ public class ReaderFragment extends Fragment
         /* requireActivity().setTitle((page + 1) + " / " + pageCount);*/
         // ✅ Always keep PDF name in title
         if (pdfName != null) {
-            requireActivity().setTitle(pdfName);
+           requireActivity().setTitle(pdfName);
+
         }
     }
 

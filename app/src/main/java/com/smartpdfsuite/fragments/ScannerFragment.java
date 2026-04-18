@@ -211,7 +211,7 @@ public class ScannerFragment extends Fragment {
         if (requireActivity() instanceof AppCompatActivity) {
             ((AppCompatActivity) requireActivity())
                     .getSupportActionBar()
-                    .show();
+                    .hide();
         }
 
         // 🔥 Show Bottom Navigation again
