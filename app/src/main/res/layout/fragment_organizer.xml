@@ -43,11 +43,11 @@
         app:boxCornerRadiusBottomEnd="20dp"
 
         app:startIconDrawable="@drawable/ic_search"
-        app:startIconTint="@color/accent"
+        app:startIconTint="@color/icon_secondary"
         app:startIconMinSize="24dp"
 
         app:endIconMode="clear_text"
-        app:endIconTint="@color/accent"
+        app:endIconTint="@color/icon_secondary"
         app:hintEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -58,8 +58,8 @@
             android:singleLine="true"
             android:inputType="text"
 
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_secondary"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="@color/icon_secondary"
 
             android:background="@null"
             android:paddingStart="12dp"
