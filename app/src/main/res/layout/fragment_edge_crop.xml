@@ -1,34 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/text_background_new">
 
-    <ImageView
-        android:id="@+id/crop_image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter" />
+    <!-- TOP BAR -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <com.smartpdfsuite.views.CropOverlayView
-        android:id="@+id/crop_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <!-- Back -->
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_circle_light"
+            android:src="@drawable/ic_back"
+            android:padding="12dp"/>
 
-    <Button
-        android:id="@+id/btn_crop_done"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        android:text="Done" />
+        <!-- Title -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-</FrameLayout>-->
+            <TextView
+                android:text="Adjust Borders"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Drag the corners to frame your document"
+                android:textSize="13sp"
+                android:textColor="#777"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Magic icon -->
+<!--        <ImageButton-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background="@drawable/bg_circle_light"-->
+<!--            android:src="@drawable/ic_magic"-->
+<!--            android:padding="12dp"/>-->
+    </LinearLayout>
+
+    <!-- IMAGE CONTAINER -->
+    <FrameLayout
+        android:id="@+id/image_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_crop_container"
+        android:clipToOutline="true"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintBottom_toTopOf="@id/bottom_card"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/crop_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"/>
+
+        <com.smartpdfsuite.views.CropOverlayView
+            android:id="@+id/crop_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
+    <!-- BOTTOM CARD -->
+    <LinearLayout
+        android:id="@+id/bottom_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_bottom_card"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Rotate Options -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <!-- Left -->
+            <LinearLayout
+                android:id="@+id/btn_rotate_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_circle_light"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_rotate_left"
+                    android:tint="@color/red"/>
+
+                <TextView
+                    android:text="Left"
+                    android:textSize="16sp"
+                    android:textColor="@color/text"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="70dp"
+                android:background="#EEEEEE"/>
+
+            <!-- Right -->
+            <LinearLayout
+                android:id="@+id/btn_rotate_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_circle_light"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_rotate_right"
+                    android:tint="@color/red"/>
+
+                <TextView
+                    android:text="Right"
+                    android:textSize="16sp"
+                    android:textColor="@color/text"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- DONE BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_crop_done"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="20dp"
+            android:text="Done"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/red"
+            app:cornerRadius="30dp"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+<!--
+<?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000">
 
-    <!-- Image Container -->
+    &lt;!&ndash; Image Container &ndash;&gt;
     <FrameLayout
         android:id="@+id/image_container"
         android:layout_width="match_parent"
@@ -47,7 +216,7 @@
 
     </FrameLayout>
 
-    <!-- Bottom Controls -->
+    &lt;!&ndash; Bottom Controls &ndash;&gt;
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,7 +225,7 @@
         android:background="#DD000000"
         android:padding="10dp">
 
-        <!-- Rotate Buttons -->
+        &lt;!&ndash; Rotate Buttons &ndash;&gt;
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,7 +250,7 @@
                 android:text="Right" />
         </LinearLayout>
 
-        <!-- Done Button -->
+        &lt;!&ndash; Done Button &ndash;&gt;
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_crop_done"
             android:layout_width="match_parent"
@@ -92,4 +261,4 @@
             android:text="Done" />
     </LinearLayout>
 
-</FrameLayout>
+</FrameLayout>-->

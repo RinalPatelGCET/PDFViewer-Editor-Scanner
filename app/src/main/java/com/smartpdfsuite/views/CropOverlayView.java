@@ -23,13 +23,34 @@ public class CropOverlayView extends View {
     private RectF imageRect;
     private int activePoint = -1;
 
+    private final Paint gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     public CropOverlayView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     private void init() {
-        borderPaint.setColor(Color.GREEN);
+        borderPaint.setColor(Color.parseColor("#FC555C"));
+        borderPaint.setStrokeWidth(6f);
+        borderPaint.setStyle(Paint.Style.STROKE);
+
+        handlePaint.setColor(Color.WHITE);
+        handlePaint.setStyle(Paint.Style.FILL);
+
+        gridPaint.setColor(Color.WHITE);
+        gridPaint.setAlpha(80);
+        gridPaint.setStrokeWidth(2f);
+
+        shadowPaint.setColor(Color.parseColor("#88000000"));
+
+        for (int i = 0; i < 8; i++) {
+            points[i] = new PointF();
+        }
+
+
+       /* borderPaint.setColor(Color.GREEN);
         borderPaint.setStrokeWidth(4f);
         borderPaint.setStyle(Paint.Style.STROKE);
 
@@ -38,7 +59,7 @@ public class CropOverlayView extends View {
 
         for (int i = 0; i < 8; i++) {
             points[i] = new PointF();
-        }
+        }*/
     }
 
     public void setImageRect(RectF rect) {
@@ -94,11 +115,54 @@ public class CropOverlayView extends View {
         path.lineTo(points[3].x, points[3].y);
         path.close();
 
+        // Border
+        canvas.drawPath(path, borderPaint);
+
+        // Grid lines
+        for (int i = 1; i < 3; i++) {
+
+            float vx1 = points[0].x + (points[1].x - points[0].x) * i / 3f;
+            float vy1 = points[0].y + (points[1].y - points[0].y) * i / 3f;
+
+            float vx2 = points[3].x + (points[2].x - points[3].x) * i / 3f;
+            float vy2 = points[3].y + (points[2].y - points[3].y) * i / 3f;
+
+            canvas.drawLine(vx1, vy1, vx2, vy2, gridPaint);
+
+            float hx1 = points[0].x + (points[3].x - points[0].x) * i / 3f;
+            float hy1 = points[0].y + (points[3].y - points[0].y) * i / 3f;
+
+            float hx2 = points[1].x + (points[2].x - points[1].x) * i / 3f;
+            float hy2 = points[1].y + (points[2].y - points[1].y) * i / 3f;
+
+            canvas.drawLine(hx1, hy1, hx2, hy2, gridPaint);
+        }
+
+        // Handles
+        Paint redStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
+        redStroke.setColor(Color.parseColor("#FC555C"));
+        redStroke.setStyle(Paint.Style.STROKE);
+        redStroke.setStrokeWidth(5f);
+
+        for (PointF p : points) {
+            canvas.drawCircle(p.x, p.y, HANDLE_RADIUS + 8, handlePaint);
+            canvas.drawCircle(p.x, p.y, HANDLE_RADIUS + 8, redStroke);
+        }
+
+       /* if (imageRect == null) return;
+
+        Path path = new Path();
+        path.moveTo(points[0].x, points[0].y);
+        path.lineTo(points[1].x, points[1].y);
+        path.lineTo(points[2].x, points[2].y);
+        path.lineTo(points[3].x, points[3].y);
+        path.close();
+
         canvas.drawPath(path, borderPaint);
 
         for (PointF p : points) {
             canvas.drawCircle(p.x, p.y, HANDLE_RADIUS, handlePaint);
-        }
+        }*/
     }
 
     @Override

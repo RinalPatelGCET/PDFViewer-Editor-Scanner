@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.graphics.drawable.Drawable;
 
@@ -46,12 +48,19 @@ public class EdgeCropFragment extends Fragment {
         cropOverlayView = view.findViewById(R.id.crop_overlay);
         Button doneButton = view.findViewById(R.id.btn_crop_done);
 
-        Button rotateLeft = view.findViewById(R.id.btn_rotate_left);
-        Button rotateRight = view.findViewById(R.id.btn_rotate_right);
+        LinearLayout rotateLeft = view.findViewById(R.id.btn_rotate_left);
+        LinearLayout rotateRight = view.findViewById(R.id.btn_rotate_right);
 
 
         rotateLeft.setOnClickListener(v -> rotateImage(-90));
         rotateRight.setOnClickListener(v -> rotateImage(90));
+
+        ImageButton backButton = view.findViewById(R.id.btn_back);
+
+        backButton.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigateUp();
+        });
+
 
         if (getArguments() != null) {
             String uri = getArguments().getString("imageUri");
