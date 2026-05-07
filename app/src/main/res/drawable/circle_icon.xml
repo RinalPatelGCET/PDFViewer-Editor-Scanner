@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 🔴 OUTER SOFT RING -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FDE7E9"/> <!-- soft pink -->
+        </shape>
+    </item>
+
+    <!-- ⚪ WHITE RING -->
+    <item android:inset="8dp">
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF"/>
+        </shape>
+    </item>
+
+    <!-- 🔴 RED CENTER -->
+    <item android:inset="20dp">
+        <shape android:shape="oval">
+            <gradient
+                android:startColor="#FF4B4B"
+                android:endColor="#D32F2F"
+                android:angle="270"/>
+        </shape>
+    </item>
+
+</layer-list>

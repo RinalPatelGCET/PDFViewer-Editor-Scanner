@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -49,6 +50,7 @@ public class ScannerFragment extends Fragment {
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private boolean isFlashOn = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,10 +67,34 @@ public class ScannerFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_scanner, container, false);
 
         previewView = root.findViewById(R.id.camera_preview_view);
-        ImageButton captureButton = root.findViewById(R.id.capture_button);
+        FrameLayout captureButton = root.findViewById(R.id.capture_button);
 
         cameraExecutor = Executors.newSingleThreadExecutor();
         captureButton.setOnClickListener(v -> takePhoto());
+
+        ImageButton backBtn = root.findViewById(R.id.btn_back);
+        ImageButton flashBtn = root.findViewById(R.id.btn_flash);
+
+        backBtn.setOnClickListener(v -> {
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+        });
+        flashBtn.setOnClickListener(v -> {
+            if (imageCapture == null) return;
+
+            isFlashOn = !isFlashOn;
+
+            if (imageCapture != null) {
+                imageCapture.setFlashMode(
+                        isFlashOn ?
+                                ImageCapture.FLASH_MODE_ON :
+                                ImageCapture.FLASH_MODE_OFF
+                );
+            }
+
+            Toast.makeText(getContext(),
+                    isFlashOn ? "Flash ON" : "Flash OFF",
+                    Toast.LENGTH_SHORT).show();
+        });
 
         return root;
     }

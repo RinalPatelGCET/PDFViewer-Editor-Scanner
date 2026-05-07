@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--Theme -1 purple- orange -->
 
+    <!--
+    Latest Theme suggested by K.A.Patel
+-->
+
+    <color name="red">#FC555C</color>
+    <color name="light_red_background">#FDECEC</color>
+    <color name="icon_primary_new">#D8555A</color>
+    <color name="icon_secondary_new">#515866</color>
+    <color name="text">#181F29</color>
+    <color name="text_background_new">#FEFAF9</color>
+
+
+
+
+
+
+
+<!--Theme -1 purple- orange -->
     <!-- Primary (Purple) -->
     <color name="primary">#6A1B9A</color>
     <color name="primary_dark">#4A148C</color>

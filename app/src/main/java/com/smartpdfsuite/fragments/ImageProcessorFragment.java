@@ -245,6 +245,22 @@ public class ImageProcessorFragment extends Fragment {
                     break;
                 case SUCCESS:
                     showProcessingUi(false);
+                    Toast.makeText(getContext(), "PDF created successfully!", Toast.LENGTH_SHORT).show();
+
+                    // Reload PDF list
+                    homeViewModel.loadPdfsFromStorage(requireContext());
+                    organizerViewModel.loadAllPdfs(requireContext());
+
+                    // Navigate to Home screen
+                    NavController navController = Navigation.findNavController(requireView());
+                    navController.popBackStack(R.id.navigation_home, false);
+                    navController.navigate(R.id.navigation_home);
+
+                    // Clear URI
+                    scannerViewModel.clearLastCreatedPdfUri();
+                    break;
+/*
+                    showProcessingUi(false);
                     Toast.makeText(getContext(), "Operation successful!", Toast.LENGTH_SHORT).show();
 
                     // If image processing was successful, reload the image into the ImageView
@@ -272,7 +288,8 @@ public class ImageProcessorFragment extends Fragment {
                         // to prevent accidental re-navigation or stale data on subsequent operations.
                         scannerViewModel.clearLastCreatedPdfUri();
                     }
-                    break;
+
+                    break;*/
                 case FAILURE:
                     showProcessingUi(false);
                     Toast.makeText(getContext(), "Operation failed.", Toast.LENGTH_LONG).show(); // Longer toast for failures

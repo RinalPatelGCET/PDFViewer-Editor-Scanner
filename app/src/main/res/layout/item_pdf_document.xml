@@ -11,7 +11,7 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
     app:strokeColor="@color/divider"
-    android:backgroundTint="@color/card_bg">
+    android:backgroundTint="@color/text_background_new">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,8 +24,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_pdf_file_icon"
-            app:tint="@color/accent"
+            android:src="@drawable/nic_pdf"
             tools:ignore="ContentDescription" />
 
         <LinearLayout
@@ -42,7 +41,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="@color/text"
                 tools:text="My_Awesome_Document_with_a_very_long_name.pdf" />
 
             <LinearLayout
@@ -56,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textColor="@color/icon_secondary_new"
                     tools:text="2.5 MB" />
 
                 <TextView
@@ -65,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="@color/icon_secondary"
+                    android:textColor="@color/icon_secondary_new"
                     tools:text="Dec 10, 2025 10:30" />
             </LinearLayout>
         </LinearLayout>
@@ -76,7 +75,7 @@
             android:layout_height="24dp"
             android:src="@drawable/ic_share"
             android:layout_marginEnd="12dp"
-            android:tint="@color/icon_secondary"
+            android:tint="@color/icon_secondary_new"
             android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -91,7 +90,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="4dp"
-            android:tint="@color/icon_secondary"
+            android:tint="@color/icon_secondary_new"
             android:src="@drawable/ic_more_vert"
             tools:ignore="ContentDescription" />
 

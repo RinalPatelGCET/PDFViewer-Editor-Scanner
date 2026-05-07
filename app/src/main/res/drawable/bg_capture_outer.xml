@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="@color/text_background_new"/> <!-- soft red tint -->
+
+    <stroke
+        android:width="5dp"
+        android:color="@color/light_red_background"/>
+
+</shape>
