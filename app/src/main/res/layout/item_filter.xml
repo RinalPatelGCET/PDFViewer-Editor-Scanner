@@ -16,7 +16,7 @@
         android:id="@+id/filter_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/icon_primary"
+        android:textColor="@color/red"
         android:textSize="12sp"
         android:layout_marginTop="4dp"/>
 
